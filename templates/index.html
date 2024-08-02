@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Browser</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .file-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .file-list li {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .file-list .file-name {
+            flex-grow: 1;
+            word-break: break-all;
+        }
+        .file-list .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .file-list form {
+            margin-right: 10px;
+        }
+        .highlight-folder {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        @media (max-width: 576px) {
+            .file-list .actions form button {
+                font-size: 1.2rem;
+                padding: 10px 20px;
+            }
+            .highlight-folder {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">File Browser</h1>
+        
+        <div class="mb-3">
+            <h3>Current Folder: {{ subpath if subpath else 'Root' }}</h3>
+            {% if subpath %}
+                <a href="{{ url_for('index', subpath=parent_folder) }}" class="btn btn-secondary btn-sm">Back</a>
+            {% endif %}
+        </div>
+
+        <h2>Folders</h2>
+        <ul class="file-list">
+            {% for folder in folders %}
+                <li>
+                    <div class="actions">
+                        {% if subpath != "00_Archive" %}
+                        <form action="{{ url_for('archive') }}" method="post">
+                            <input type="hidden" name="subpath" value="{{ subpath }}">
+                            <input type="hidden" name="name" value="{{ folder }}">
+                            <button type="submit" class="btn btn-warning btn-sm">📦</button>
+                        </form>
+                        {% endif %}
+                        {% if subpath == "00_selected" %}
+                        <form action="{{ url_for('later') }}" method="post">
+                            <input type="hidden" name="subpath" value="{{ subpath }}">
+                            <input type="hidden" name="name" value="{{ folder }}">
+                            <button type="submit" class="btn btn-info btn-sm">⌛</button>
+                        </form>
+                        {% endif %}
+                        {% if subpath != "00_selected" %}
+                        <form action="{{ url_for('select') }}" method="post">
+                            <input type="hidden" name="subpath" value="{{ subpath }}">
+                            <input type="hidden" name="name" value="{{ folder }}">
+                            <button type="submit" class="btn btn-info btn-sm">📥</button>
+                        </form>
+                        {% endif %}
+                        <a href="{{ url_for('index', subpath=os.path.join(subpath, folder)) }}" class="btn btn-primary btn-sm {% if folder in ['00_Archive', '00_selected'] %}highlight-folder{% endif %}">{{ folder }}</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <h2>Files</h2>
+        <ul class="file-list">
+            {% for file in files %}
+                <li>
+                    <div class="actions">
+                        {% if subpath != "00_Archive" %}
+                        <form action="{{ url_for('archive') }}" method="post">
+                            <input type="hidden" name="subpath" value="{{ subpath }}">
+                            <input type="hidden" name="name" value="{{ file }}">
+                            <button type="submit" class="btn btn-warning btn-sm">📦</button>
+                        </form>
+                        {% endif %}
+                        {% if subpath == "00_selected" %}
+                        <form action="{{ url_for('later') }}" method="post">
+                            <input type="hidden" name="subpath" value="{{ subpath }}">
+                            <input type="hidden" name="name" value="{{ file }}">
+                            <button type="submit" class="btn btn-info btn-sm">⌛</button>
+                        </form>
+                        {% endif %}
+                        {% if subpath != "00_selected" %}
+                        <form action="{{ url_for('select') }}" method="post">
+                            <input type="hidden" name="subpath" value="{{ subpath }}">
+                            <input type="hidden" name="name" value="{{ file }}">
+                            <button type="submit" class="btn btn-info btn-sm">📥</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    <span class="file-name">{{ file }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

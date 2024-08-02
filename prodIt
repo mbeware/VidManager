@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import shutil
+import subprocess
+from pathlib import Path    
+
+# copy app to /usr/bin
+shutil.copyfile('vidmanager.py', '/usr/bin/VidManager')
+
+# make it executable
+os.chmod('/usr/bin/VidManager', 0o755)
+
